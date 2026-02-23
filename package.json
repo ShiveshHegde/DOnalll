@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
-    "@react-three/drei": "^9.105.0",
-    "@react-three/fiber": "^8.16.8",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^9.1.0",
     "@vercel/analytics": "1.6.1",
     "@radix-ui/react-accordion": "1.2.12",
     "@radix-ui/react-alert-dialog": "1.1.15",
