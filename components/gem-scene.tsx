@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Icosahedron, Points, PointMaterial } from '@react-three/drei';
+import { Icosahedron } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface GemProps {
@@ -58,7 +58,7 @@ function Gem({ onGemClick, isAnimating }: GemProps) {
 
 function ParticleField() {
   const pointsRef = useRef<THREE.Points>(null);
-
+  
   useFrame(() => {
     if (pointsRef.current) {
       pointsRef.current.rotation.x += 0.0003;
@@ -66,7 +66,7 @@ function ParticleField() {
     }
   });
 
-  // Create particle positions
+  // Create particles on mount
   const particleCount = 300;
   const positions = new Float32Array(particleCount * 3);
 
@@ -77,15 +77,18 @@ function ParticleField() {
   }
 
   return (
-    <Points ref={pointsRef} positions={positions} stride={3} frustumCulled={false}>
-      <PointMaterial
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" array={positions} count={particleCount} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial
         transparent
         color="#FBBF24"
         size={0.1}
         sizeAttenuation={true}
         opacity={0.6}
       />
-    </Points>
+    </points>
   );
 }
 

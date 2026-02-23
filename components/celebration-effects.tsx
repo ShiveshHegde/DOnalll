@@ -12,13 +12,15 @@ const Confetti = ({ index }: { index: number }) => {
   const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
   const randomDelay = Math.random() * 0.2;
   const randomDuration = 2 + Math.random() * 0.5;
+  const randomX = typeof window !== 'undefined' ? Math.random() * window.innerWidth : Math.random() * 800;
+  const randomY = typeof window !== 'undefined' ? window.innerHeight : 600;
 
   return (
     <motion.div
       className="fixed pointer-events-none text-4xl md:text-5xl"
       initial={{
-        x: Math.random() * window.innerWidth,
-        y: window.innerHeight,
+        x: randomX,
+        y: randomY,
         opacity: 1,
         rotate: 0,
       }}
