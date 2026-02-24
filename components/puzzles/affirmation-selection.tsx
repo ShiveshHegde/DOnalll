@@ -10,8 +10,7 @@ export function AffirmationSelection() {
   const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
-  const minRequired = 3;
-  const maxRequired = 5;
+  const minRequired = 2; // Reduced from 3 to 2 for easier gameplay
 
   const handleToggle = (text: string) => {
     if (submitted) return;
@@ -19,7 +18,7 @@ export function AffirmationSelection() {
     setSelectedAffirmations((prev) => {
       if (prev.includes(text)) {
         return prev.filter((item) => item !== text);
-      } else if (prev.length < maxRequired) {
+      } else if (prev.length < minRequired + 2) {
         return [...prev, text];
       }
       return prev;
@@ -31,44 +30,56 @@ export function AffirmationSelection() {
       setSubmitted(true);
       completeLevel(5);
       unlockApology(5);
-      addScore(200);
+      addScore(100);
       setAnimating(true);
 
       setTimeout(() => {
         setAnimating(false);
-      }, 3000);
+      }, 2500);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 py-8">
+    <div className="flex flex-col items-center justify-center gap-4 py-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Affirmation Selection</h2>
-        <p className="text-sm text-gray-400">Choose the affirmations that describe us</p>
+        <h2 className="text-lg font-bold mb-1">Our Connection</h2>
+        <p className="text-xs text-gray-400">Pick what matters</p>
         <div className="mt-2 text-xs text-purple-300">
-          {selectedAffirmations.length}/{minRequired} required
+          {selectedAffirmations.length}/{minRequired} selected
         </div>
       </div>
 
-      <div className="w-full max-w-2xl grid grid-cols-2 gap-3">
-        {AFFIRMATION_OPTIONS.map((option, index) => (
+      <div className="w-full max-w-xs grid grid-cols-2 gap-2">
+        {AFFIRMATION_OPTIONS.slice(0, 4).map((option, index) => (
           <motion.button
             key={option.text}
             onClick={() => handleToggle(option.text)}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.05 }}
-            whileHover={{ scale: selectedAffirmations.includes(option.text) ? 1.05 : 1.02 }}
-            whileTap={{ scale: 0.95 }}
-            className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 text-center ${
+            transition={{ delay: index * 0.06 }}
+            whileHover={!submitted ? { scale: 1.05 } : {}}
+            whileTap={!submitted ? { scale: 0.95 } : {}}
+            className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-1 text-center ${
               selectedAffirmations.includes(option.text)
-                ? 'border-purple-400 bg-purple-500/30'
-                : 'border-slate-700 hover:border-purple-400'
+                ? 'border-purple-400 bg-purple-500/30 shadow-lg shadow-purple-500/20'
+                : 'border-slate-700 hover:border-purple-500'
             }`}
+            disabled={submitted}
           >
-            <span className="text-2xl">{option.emoji}</span>
-            <span className="text-sm font-semibold">{option.text}</span>
+            <span className="text-xl">{option.emoji}</span>
+            <span className="text-xs font-semibold leading-tight">{option.text}</span>
           </motion.button>
+        ))}
+      </div>
+
+      <div className="flex gap-1 mt-1">
+        {Array.from({ length: minRequired }).map((_, i) => (
+          <motion.div
+            key={i}
+            className={`w-5 h-1 rounded-full ${
+              i < selectedAffirmations.length ? 'bg-green-400' : 'bg-slate-700'
+            }`}
+          />
         ))}
       </div>
 
@@ -79,9 +90,9 @@ export function AffirmationSelection() {
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all shadow-lg"
+          className="px-6 py-2 text-sm bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all shadow-lg"
         >
-          Complete Journey
+          Finish
         </motion.button>
       )}
 
@@ -91,8 +102,8 @@ export function AffirmationSelection() {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <div className="text-green-400 text-xl font-bold mb-2">✓ You've completed the journey!</div>
-          <p className="text-sm text-gray-300">Now witness the celebration of forgiveness...</p>
+          <div className="text-green-400 text-sm font-bold">✓ Complete!</div>
+          <p className="text-xs text-gray-400 mt-1">Loading celebration...</p>
         </motion.div>
       )}
     </div>

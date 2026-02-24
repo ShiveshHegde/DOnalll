@@ -13,6 +13,7 @@ export function PatternMemory() {
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | 'ready' | ''>('ready');
 
   const colors = COLOR_SEQUENCE.slice(0, 4);
+  const maxSteps = 3; // Reduced from 5 to 3 for easier gameplay
 
   useEffect(() => {
     startRound();
@@ -33,7 +34,7 @@ export function PatternMemory() {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     for (let i = 0; i < newSequence.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       playColor(newSequence[i]);
     }
 
@@ -57,7 +58,7 @@ export function PatternMemory() {
     }
 
     if (newUserSequence.length === sequence.length) {
-      if (sequence.length === 5) {
+      if (sequence.length === maxSteps) {
         setFeedback('correct');
         completeLevel(1);
         unlockApology(1);
@@ -75,25 +76,38 @@ export function PatternMemory() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 py-8">
+    <div className="flex flex-col items-center justify-center gap-4 py-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Pattern Memory Game</h2>
-        <p className="text-sm text-gray-400">Watch the colors, then repeat the sequence!</p>
-        <div className="mt-2 text-xs text-purple-300">Sequence: {sequence.length}/5</div>
+        <h2 className="text-lg font-bold mb-1">Pattern Memory</h2>
+        <p className="text-xs text-gray-400">Repeat the sequence!</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex gap-3 mb-2">
+        {Array.from({ length: maxSteps }).map((_, i) => (
+          <motion.div
+            key={i}
+            className={`w-6 h-1 rounded-full transition-all ${
+              i < sequence.length ? 'bg-purple-500' : 'bg-slate-700'
+            }`}
+            animate={i === sequence.length - 1 && isPlayingSequence ? { opacity: [1, 0.3, 1] } : {}}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
         {colors.map((color, index) => (
           <motion.button
             key={index}
             onClick={() => handleColorClick(index)}
             disabled={isPlayingSequence}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-20 h-20 rounded-lg transition-all disabled:opacity-50"
+            whileHover={!isPlayingSequence ? { scale: 1.08 } : {}}
+            whileTap={!isPlayingSequence ? { scale: 0.92 } : {}}
+            className="w-16 h-16 rounded-lg transition-all disabled:opacity-60 shadow-lg"
             style={{
               backgroundColor: color,
-              boxShadow: `0 0 20px ${color}`,
+              boxShadow: `0 0 15px ${color}`,
+              border: userSequence.includes(index) ? '2px solid white' : 'none',
             }}
           />
         ))}
@@ -101,21 +115,20 @@ export function PatternMemory() {
 
       {feedback && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          className={`text-lg font-bold ${
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={`text-sm font-bold ${
             feedback === 'correct' ? 'text-green-400' : feedback === 'wrong' ? 'text-red-400' : 'text-purple-300'
           }`}
         >
-          {feedback === 'correct' && '✓ Correct!'}
-          {feedback === 'wrong' && '✗ Wrong sequence!'}
-          {feedback === 'ready' && 'Ready!'}
+          {feedback === 'correct' && '✓ Great!'}
+          {feedback === 'wrong' && '✗ Try again!'}
+          {feedback === 'ready' && isPlayingSequence ? 'Watch...' : 'Your turn!'}
         </motion.div>
       )}
 
-      <div className="text-xs text-gray-500 text-center">
-        {feedback === 'wrong' ? 'Try again!' : isPlayingSequence ? 'Watch carefully...' : 'Your turn!'}
+      <div className="text-xs text-gray-500">
+        Step: {userSequence.length}/{sequence.length} | Total: {sequence.length}/{maxSteps}
       </div>
     </div>
   );

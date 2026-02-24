@@ -3,34 +3,38 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useGame } from '@/components/game-engine';
-import { COLOR_SEQUENCE } from '@/data/puzzle-config';
 
 export function ColorSequence() {
   const { completeLevel, unlockApology, nextLevel, addScore } = useGame();
+  const colors = ['#EC4899', '#8B5CF6', '#06B6D4']; // Reduced to 3 colors
   const [selectedColors, setSelectedColors] = useState<number[]>([]);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | ''>('');
 
+  const correctSequence = [0, 1, 2]; // The correct order
+
   const handleColorClick = (index: number) => {
+    if (feedback === 'correct') return;
+
     const newSelected = [...selectedColors, index];
     setSelectedColors(newSelected);
 
-    if (COLOR_SEQUENCE[newSelected.length - 1] !== COLOR_SEQUENCE[index]) {
+    if (correctSequence[newSelected.length - 1] !== index) {
       setFeedback('wrong');
       setTimeout(() => {
         setSelectedColors([]);
         setFeedback('');
-      }, 1000);
+      }, 800);
       return;
     }
 
-    if (newSelected.length === COLOR_SEQUENCE.length) {
+    if (newSelected.length === correctSequence.length) {
       setFeedback('correct');
       completeLevel(4);
       unlockApology(4);
-      addScore(150);
+      addScore(100);
       setTimeout(() => {
         nextLevel();
-      }, 2000);
+      }, 1500);
     }
   };
 
@@ -40,50 +44,54 @@ export function ColorSequence() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 py-8">
+    <div className="flex flex-col items-center justify-center gap-4 py-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Color Sequence Challenge</h2>
-        <p className="text-sm text-gray-400">Click the colors in the correct sequence</p>
-        <div className="mt-2 text-xs text-purple-300">{selectedColors.length}/{COLOR_SEQUENCE.length}</div>
+        <h2 className="text-lg font-bold mb-1">Color Sequence</h2>
+        <p className="text-xs text-gray-400">Click in order: 1st, 2nd, 3rd</p>
       </div>
 
-      <div className="flex gap-3 flex-wrap justify-center">
-        {COLOR_SEQUENCE.map((color, index) => (
+      <div className="flex gap-2 mb-3">
+        {correctSequence.map((_, i) => (
+          <motion.div
+            key={i}
+            className={`text-xs font-bold px-2 py-1 rounded ${
+              i < selectedColors.length ? 'bg-green-500 text-white' : 'bg-slate-700 text-gray-400'
+            }`}
+          >
+            {i + 1}
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="flex gap-2 mb-2">
+        {colors.map((color, index) => (
           <motion.button
             key={index}
             onClick={() => handleColorClick(index)}
-            disabled={feedback === 'correct' || feedback === 'wrong'}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-24 h-24 rounded-xl transition-all disabled:opacity-50"
+            disabled={feedback === 'correct'}
+            whileHover={feedback !== 'correct' ? { scale: 1.12 } : {}}
+            whileTap={feedback !== 'correct' ? { scale: 0.88 } : {}}
+            className="w-14 h-14 rounded-lg transition-all shadow-lg disabled:opacity-60"
             style={{
               backgroundColor: color,
-              boxShadow: `0 0 30px ${color}`,
-              border: selectedColors.includes(index) ? `3px solid white` : '3px solid transparent',
+              boxShadow: `0 0 15px ${color}`,
+              border: selectedColors.includes(index) ? '2px solid white' : '2px solid transparent',
             }}
           />
         ))}
       </div>
 
-      {selectedColors.length > 0 && (
-        <div className="flex gap-2 text-xs">
-          {selectedColors.map((idx, i) => (
-            <div
-              key={i}
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLOR_SEQUENCE[idx] }}
-            />
-          ))}
-        </div>
-      )}
+      <div className="text-xs text-gray-500">
+        {selectedColors.length}/{correctSequence.length} clicked
+      </div>
 
       {feedback && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className={`text-xl font-bold ${feedback === 'correct' ? 'text-green-400' : 'text-red-400'}`}
+          className={`text-sm font-bold ${feedback === 'correct' ? 'text-green-400' : 'text-red-400'}`}
         >
-          {feedback === 'correct' ? '✓ Perfect sequence!' : '✗ Wrong order!'}
+          {feedback === 'correct' ? '✓ Perfect!' : '✗ Try again!'}
         </motion.div>
       )}
 
@@ -92,7 +100,7 @@ export function ColorSequence() {
           onClick={handleReset}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm"
+          className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded-lg"
         >
           Reset
         </motion.button>
