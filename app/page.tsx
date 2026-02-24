@@ -4,62 +4,18 @@ import { GameProvider, useGame } from '@/components/game-engine';
 import { PuzzleContainer } from '@/components/puzzle-container';
 import { GemScene } from '@/components/gem-scene';
 import { CelebrationEffects } from '@/components/celebration-effects';
+import { FinalCelebration } from '@/components/final-celebration';
 import { motion } from 'framer-motion';
 
 function GameContent() {
-  const { gameState, getUnlockedApologies } = useGame();
-
-  const unlockedApologies = getUnlockedApologies();
+  const { gameState } = useGame();
 
   if (gameState.gameComplete) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white flex flex-col items-center justify-center px-4"
-      >
+      <>
         <CelebrationEffects isActive={true} level={5} />
-
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center max-w-2xl"
-        >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Journey Complete
-          </h1>
-
-          <p className="text-xl text-gray-300 mb-8">
-            You've proven that you care, and that's what matters most. Thank you for playing and for taking this journey with me.
-          </p>
-
-          <div className="space-y-4 mb-8">
-            <h2 className="text-2xl font-bold text-purple-300">All Apologies Unlocked:</h2>
-            {unlockedApologies.map((apology) => (
-              <motion.div
-                key={apology.id}
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.1 * apology.id }}
-                className="p-4 bg-purple-500/20 border border-purple-400 rounded-lg"
-              >
-                <p className="text-sm text-purple-200 mb-2">Level {apology.id}</p>
-                <p className="text-lg italic">{apology.text}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.button
-            onClick={() => window.location.reload()}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg shadow-lg"
-          >
-            Play Again
-          </motion.button>
-        </motion.div>
-      </motion.div>
+        <FinalCelebration />
+      </>
     );
   }
 

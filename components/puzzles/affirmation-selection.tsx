@@ -10,7 +10,7 @@ export function AffirmationSelection() {
   const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
-  const minRequired = 2; // Reduced from 3 to 2 for easier gameplay
+  const minRequired = 4; // Select all 4 affirmations
 
   const handleToggle = (text: string) => {
     if (submitted) return;
@@ -18,7 +18,7 @@ export function AffirmationSelection() {
     setSelectedAffirmations((prev) => {
       if (prev.includes(text)) {
         return prev.filter((item) => item !== text);
-      } else if (prev.length < minRequired + 2) {
+      } else if (prev.length < 4) {
         return [...prev, text];
       }
       return prev;
@@ -26,7 +26,7 @@ export function AffirmationSelection() {
   };
 
   const handleSubmit = () => {
-    if (selectedAffirmations.length >= minRequired) {
+    if (selectedAffirmations.length === minRequired) {
       setSubmitted(true);
       completeLevel(5);
       unlockApology(5);
@@ -45,11 +45,11 @@ export function AffirmationSelection() {
         <h2 className="text-lg font-bold mb-1">Our Connection</h2>
         <p className="text-xs text-gray-400">Pick what matters</p>
         <div className="mt-2 text-xs text-purple-300">
-          {selectedAffirmations.length}/{minRequired} selected
+          {selectedAffirmations.length}/4 selected
         </div>
       </div>
 
-      <div className="w-full max-w-xs grid grid-cols-2 gap-2">
+      <div className="w-full max-w-sm grid grid-cols-2 gap-2">
         {AFFIRMATION_OPTIONS.slice(0, 4).map((option, index) => (
           <motion.button
             key={option.text}
@@ -72,8 +72,8 @@ export function AffirmationSelection() {
         ))}
       </div>
 
-      <div className="flex gap-1 mt-1">
-        {Array.from({ length: minRequired }).map((_, i) => (
+      <div className="flex gap-1 mt-2">
+        {Array.from({ length: 4 }).map((_, i) => (
           <motion.div
             key={i}
             className={`w-5 h-1 rounded-full ${
@@ -83,7 +83,7 @@ export function AffirmationSelection() {
         ))}
       </div>
 
-      {selectedAffirmations.length >= minRequired && !submitted && (
+      {selectedAffirmations.length === 4 && !submitted && (
         <motion.button
           onClick={handleSubmit}
           initial={{ opacity: 0, y: 10 }}

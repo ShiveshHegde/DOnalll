@@ -116,7 +116,7 @@ export const AFFIRMATION_OPTIONS = [
 
 export const WORD_UNSCRAMBLE = [
   { scrambled: 'ISORYR', correct: 'SORRY' },
-  { scrambled: 'SGENOFIVR', correct: 'FORGIVEN' },
+  { scrambled: 'FORGIVE ME', correct: 'FORGIVE ME' },
   { scrambled: 'REPAIR', correct: 'REPAIR' },
   { scrambled: 'TRUST', correct: 'TRUST' },
 ];

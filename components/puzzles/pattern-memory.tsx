@@ -95,19 +95,18 @@ export function PatternMemory() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {colors.map((color, index) => (
           <motion.button
             key={index}
             onClick={() => handleColorClick(index)}
             disabled={isPlayingSequence}
-            whileHover={!isPlayingSequence ? { scale: 1.08 } : {}}
-            whileTap={!isPlayingSequence ? { scale: 0.92 } : {}}
-            className="w-16 h-16 rounded-lg transition-all disabled:opacity-60 shadow-lg"
+            whileHover={!isPlayingSequence ? { scale: 1.1 } : {}}
+            whileTap={!isPlayingSequence ? { scale: 0.9 } : {}}
+            className="w-20 h-20 rounded-xl transition-all disabled:opacity-70 shadow-2xl border-2 border-white/20"
             style={{
               backgroundColor: color,
-              boxShadow: `0 0 15px ${color}`,
-              border: userSequence.includes(index) ? '2px solid white' : 'none',
+              boxShadow: `0 0 25px ${color}, inset 0 0 15px rgba(255,255,255,0.3)`,
             }}
           />
         ))}
