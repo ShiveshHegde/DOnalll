@@ -1,16 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useGame } from '@/components/game-engine';
 import { AFFIRMATION_OPTIONS } from '@/data/puzzle-config';
 
 export function AffirmationSelection() {
-  const { completeLevel, unlockApology, gameState, addScore, setAnimating } = useGame();
+  const { completeLevel, unlockApology, gameState, addScore, setAnimating, nextLevel } = useGame();
   const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
   const minRequired = 4; // Select all 4 affirmations
+
+  useEffect(() => {
+    if (gameState.gameComplete) {
+      const timer = setTimeout(() => {
+        window.location.hash = '#celebration';
+      }, 2800);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.gameComplete]);
 
   const handleToggle = (text: string) => {
     if (submitted) return;
@@ -35,6 +44,7 @@ export function AffirmationSelection() {
 
       setTimeout(() => {
         setAnimating(false);
+        nextLevel();
       }, 2500);
     }
   };
