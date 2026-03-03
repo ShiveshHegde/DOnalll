@@ -1,14 +1,22 @@
 'use client';
 
+import { Suspense, useState, useEffect } from 'react';
 import { GameProvider, useGame } from '@/components/game-engine';
 import { PuzzleContainer } from '@/components/puzzle-container';
 import { GemScene } from '@/components/gem-scene';
 import { CelebrationEffects } from '@/components/celebration-effects';
 import { FinalCelebration } from '@/components/final-celebration';
-import { motion } from 'framer-motion';
+import { LoadingScreen } from '@/components/loading-screen';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function GameContent() {
   const { gameState } = useGame();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (gameState.gameComplete) {
     return (
@@ -20,6 +28,9 @@ function GameContent() {
   }
 
   return (
+    <AnimatePresence mode="wait">
+      {isLoading && <LoadingScreen key="loading" />}
+      {!isLoading && (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <motion.div
@@ -84,6 +95,8 @@ function GameContent() {
         </div>
       </div>
     </main>
+      )}
+    </AnimatePresence>
   );
 }
 
